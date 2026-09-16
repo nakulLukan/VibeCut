@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Material 3 Dark Mode Palette -->
+    <Color x:Key="MD3Primary">#D0BCFF</Color>
+    <Color x:Key="MD3OnPrimary">#381E72</Color>
+    <Color x:Key="MD3Secondary">#CCC2DC</Color>
+    <Color x:Key="MD3OnSecondary">#332D41</Color>
+    <Color x:Key="MD3Surface">#1C1B1F</Color>
+    <Color x:Key="MD3OnSurface">#E6E1E5</Color>
+    <Color x:Key="MD3SurfaceVariant">#49454F</Color>
+    <Color x:Key="MD3Error">#F2B8B5</Color>
+    <Color x:Key="MD3Background">#141218</Color>
+
+    <!-- Legacy mapped colors for generic MAUI controls -->
+    <Color x:Key="Primary">#D0BCFF</Color>
+    <Color x:Key="Secondary">#CCC2DC</Color>
+    <Color x:Key="Tertiary">#EFB8C8</Color>
+    <Color x:Key="White">White</Color>
+    <Color x:Key="Black">Black</Color>
+</ResourceDictionary>

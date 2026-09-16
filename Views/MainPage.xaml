@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:YoutubeShortsEditorMobile.ViewModels"
+             xmlns:models="clr-namespace:YoutubeShortsEditorMobile.Models"
+             
+             x:Class="YoutubeShortsEditorMobile.Views.MainPage"
+             Shell.NavBarIsVisible="True"
+             Title="YouTube Shorts Editor">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- T043: URL Entry Area -->
+        <Border Grid.Row="0" Margin="16" Padding="16" BackgroundColor="{StaticResource MD3Surface}" Stroke="{StaticResource MD3SurfaceVariant}" StrokeThickness="1" StrokeShape="RoundRectangle 16">
+            <VerticalStackLayout Spacing="8">
+                <HorizontalStackLayout Spacing="12">
+                    <Entry Placeholder="Paste YouTube URL..." 
+                           Text="{Binding YoutubeUrl}" 
+                           HorizontalOptions="FillAndExpand" 
+                           WidthRequest="250" />
+                    <Button Text="Submit" Command="{Binding SubmitUrlCommand}" />
+                </HorizontalStackLayout>
+                <Label Text="{Binding UrlValidationError}" 
+                       TextColor="{StaticResource MD3Error}"
+                        />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- T044: Projects CollectionView -->
+        <CollectionView x:Name="ProjectsCollectionView"
+                        Grid.Row="1" 
+                        ItemsSource="{Binding Projects}" 
+                        SelectionMode="None">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="16" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="viewmodels:ProjectCardViewModel">
+                    <Frame Margin="16,0,16,0" Padding="16">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding BindingContext.NavigateToEditorCommand, Source={x:Reference ProjectsCollectionView}}" CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+                        
+                        <Grid ColumnDefinitions="120,*">
+                            <Image Grid.Column="0" Source="{Binding ThumbnailPath}" Aspect="AspectFill" HeightRequest="68" WidthRequest="120" />
+                            
+                            <VerticalStackLayout Grid.Column="1" Margin="16,0,0,0" Spacing="4">
+                                <Label Style="{StaticResource HeadlineLabel}" FontSize="16" Text="{Binding Title}" MaxLines="2" LineBreakMode="TailTruncation" />
+                                
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Style="{StaticResource CaptionLabel}" Text="{Binding DownloadState}" TextColor="{Binding DownloadState, Converter={StaticResource StateToColorConverter}}" />
+                                    
+                                    <!-- Retry Button if Failed -->
+                                    <Button Text="Retry" Style="{StaticResource SecondaryButton}" 
+                                            Command="{Binding RetryDownloadCommand}"
+                                            IsVisible="False"
+                                            Padding="8,4" MinimumHeightRequest="24" FontSize="10">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding DownloadState}" Value="Failed">
+                                                <Setter Property="IsVisible" Value="True" />
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                </HorizontalStackLayout>
+                                
+                                <ProgressBar Progress="{Binding DownloadProgress}" IsVisible="False">
+                                    <ProgressBar.Triggers>
+                                        <DataTrigger TargetType="ProgressBar" Binding="{Binding DownloadState}" Value="Downloading">
+                                            <Setter Property="IsVisible" Value="True" />
+                                        </DataTrigger>
+                                    </ProgressBar.Triggers>
+                                </ProgressBar>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            
+            <!-- T045: Empty State UI -->
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="16" Margin="0,64,0,0">
+                    <Label Text="🎬" FontSize="64" HorizontalOptions="Center" />
+                    <Label Style="{StaticResource HeadlineLabel}" Text="No projects yet" HorizontalOptions="Center" />
+                    <Label Style="{StaticResource BodyLabel}" Text="Paste a YouTube link above to get started" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+    </Grid>
+</ContentPage>

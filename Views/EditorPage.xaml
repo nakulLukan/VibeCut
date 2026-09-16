@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewmodels="clr-namespace:YoutubeShortsEditorMobile.ViewModels"
+             xmlns:controls="clr-namespace:YoutubeShortsEditorMobile.Controls"
+             xmlns:models="clr-namespace:YoutubeShortsEditorMobile.Models"
+             x:Class="YoutubeShortsEditorMobile.Views.EditorPage"
+             x:DataType="viewmodels:EditorViewModel"
+             Title="Editor"
+             Shell.NavBarIsVisible="True">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Split" Command="{Binding SplitSegmentCommand}" CommandParameter="{Binding SelectedSegment}" Order="Primary" />
+        <ToolbarItem Text="9:16 Crop" Command="{Binding ToggleCropCommand}" CommandParameter="{Binding SelectedSegment}" Order="Primary" />
+        <ToolbarItem Text="▶ Preview" Command="{Binding RenderPreviewCommand}" Order="Primary" />
+        <ToolbarItem Text="✨ Detect Highlights" Command="{Binding DetectHighlightsCommand}" Order="Primary" />
+        <ToolbarItem Text="Export" Command="{Binding ExportCommand}" Order="Primary" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="2*,Auto,1.5*,Auto">
+
+        <!-- Row 0: MediaElement Video Preview -->
+        <toolkit:MediaElement
+            x:Name="MediaPlayerElement"
+            Grid.Row="0"
+            ShouldAutoPlay="False"
+            ShouldShowPlaybackControls="True"
+            BackgroundColor="Black" />
+
+        <!-- Row 1: Playhead Slider -->
+        <VerticalStackLayout Grid.Row="1" Padding="16,8" Spacing="4">
+            <Slider x:Name="PlayheadSlider"
+                    Minimum="0"
+                    Maximum="1"
+                    Value="{Binding PlayheadPosition}"
+                    MinimumTrackColor="{StaticResource MD3Primary}"
+                    MaximumTrackColor="{StaticResource MD3SurfaceVariant}"
+                    ThumbColor="{StaticResource MD3Primary}" />
+            <Grid ColumnDefinitions="*,*">
+                <Label Grid.Column="0" Style="{StaticResource CaptionLabel}" Text="{Binding PlayheadPosition, StringFormat='{0:mm\\:ss}'}" />
+                <Label Grid.Column="1" Style="{StaticResource CaptionLabel}" HorizontalOptions="End"
+                       Text="{Binding CurrentProject.Duration, StringFormat='{0:mm\\:ss}'}" />
+            </Grid>
+        </VerticalStackLayout>
+
+        <!-- Row 2: Timeline Control -->
+        <Grid Grid.Row="2" RowDefinitions="Auto,*" Padding="0,4,0,0" BackgroundColor="{StaticResource MD3Surface}">
+            <Label Grid.Row="0" Text="TIMELINE" Style="{StaticResource CaptionLabel}" Margin="16,8,0,4" />
+            <controls:TimelineControl
+                Grid.Row="1"
+                Segments="{Binding Segments}"
+                TotalDuration="{Binding CurrentProject.Duration}"
+                ToggleMuteCommand="{Binding ToggleMuteCommand}"
+                ToggleCropCommand="{Binding ToggleCropCommand}"
+                DeleteSegmentCommand="{Binding DeleteSegmentCommand}"
+                SplitSegmentCommand="{Binding SplitSegmentCommand}" />
+        </Grid>
+
+        <!-- Row 3: Highlights Panel -->
+        <Border Grid.Row="3" BackgroundColor="{StaticResource MD3SurfaceVariant}" StrokeThickness="0" Margin="0,4,0,0">
+            <VerticalStackLayout Padding="16,8">
+                <Label Text="HIGHLIGHT SUGGESTIONS" Style="{StaticResource CaptionLabel}" Margin="0,0,0,8" />
+                
+                <ActivityIndicator IsRunning="{Binding IsDetectingHighlights}" IsVisible="{Binding IsDetectingHighlights}" Color="{StaticResource MD3Primary}" />
+                <Label Text="No highlights detected." IsVisible="{Binding HasNoHighlights}" Style="{StaticResource BodyLabel}" HorizontalOptions="Center" />
+                
+                <CollectionView ItemsSource="{Binding HighlightSuggestions}" HeightRequest="120">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:HighlightSuggestion">
+                            <Grid ColumnDefinitions="Auto,*,Auto" Padding="0,4" ColumnSpacing="8">
+                                <Label Grid.Column="0" VerticalOptions="Center" Style="{StaticResource BodyLabel}">
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0:mm\\:ss} - {1:mm\\:ss}">
+                                            <Binding Path="StartTime" />
+                                            <Binding Path="EndTime" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                
+                                <ProgressBar Grid.Column="1" Progress="{Binding ActivityScore}" VerticalOptions="Center" ProgressColor="{StaticResource MD3Primary}" />
+                                
+                                <HorizontalStackLayout Grid.Column="2" Spacing="4">
+                                    <Button Text="Preview" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:EditorViewModel}}, Path=PreviewHighlightCommand}" CommandParameter="{Binding .}" Style="{StaticResource TonalButton}" />
+                                    <Button Text="Accept" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:EditorViewModel}}, Path=AcceptHighlightCommand}" CommandParameter="{Binding .}" Style="{StaticResource FilledButton}" />
+                                    <ImageButton Source="ic_dismiss.png" Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:EditorViewModel}}, Path=DismissHighlightCommand}" CommandParameter="{Binding .}" BackgroundColor="Transparent" HeightRequest="32" WidthRequest="32" />
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Processing overlay -->
+        <Grid Grid.Row="0" Grid.RowSpan="4"
+              IsVisible="{Binding IsProcessing}"
+              BackgroundColor="#CC000000">
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="16">
+                <ActivityIndicator IsRunning="{Binding IsProcessing}" Color="{StaticResource MD3Primary}" />
+                <Label Text="Rendering..." Style="{StaticResource BodyLabel}" HorizontalOptions="Center" />
+                <ProgressBar Progress="{Binding RenderProgress}" WidthRequest="200" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Exporting overlay -->
+        <Grid Grid.Row="0" Grid.RowSpan="4"
+              IsVisible="{Binding IsExporting}"
+              BackgroundColor="#EE000000">
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="16">
+                <ActivityIndicator IsRunning="{Binding IsExporting}" Color="{StaticResource MD3Primary}" />
+                <Label Text="Exporting Video..." Style="{StaticResource TitleLabel}" HorizontalOptions="Center" />
+                <ProgressBar Progress="{Binding ExportProgress}" WidthRequest="250" ProgressColor="{StaticResource MD3Primary}" />
+                <Label Text="Please keep the app open." Style="{StaticResource CaptionLabel}" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Export Result Panel (Modal-like) -->
+        <Grid Grid.Row="0" Grid.RowSpan="4"
+              IsVisible="{Binding ShowExportResult}"
+              BackgroundColor="#88000000">
+            <Border BackgroundColor="{StaticResource MD3Surface}" 
+                    VerticalOptions="Center" HorizontalOptions="Center" 
+                    WidthRequest="300" Padding="24"
+                    StrokeThickness="0" StrokeShape="RoundRectangle 16">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="🎉 Export Complete!" Style="{StaticResource TitleLabel}" HorizontalOptions="Center" />
+                    
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="8">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Duration:" Style="{StaticResource BodyLabel}" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding ExportDuration, StringFormat='{0:mm\\:ss}'}" Style="{StaticResource BodyLabel}" FontAttributes="Bold" />
+                        
+                        <Label Grid.Row="1" Grid.Column="0" Text="File Size:" Style="{StaticResource BodyLabel}" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding ExportFileSizeMb, StringFormat='{}{0:F1} MB'}" Style="{StaticResource BodyLabel}" FontAttributes="Bold" />
+                    </Grid>
+
+                    <Button Text="Save to Gallery" Command="{Binding SaveToGalleryCommand}" Style="{StaticResource FilledButton}" Margin="0,8,0,0" />
+                    <Button Text="Share" Command="{Binding ShareCommand}" Style="{StaticResource TonalButton}" />
+                    <Button Text="Done" Command="{Binding DismissExportResultCommand}" Style="{StaticResource TextButton}" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentPage>

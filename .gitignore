@@ -1,0 +1,47 @@
+# .NET / C# build outputs
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+*.DS_Store
+*.log
+
+# Visual Studio
+.vs/
+*.vspscc
+*.vssscc
+*.pidb
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.VC.opendb
+
+# Rider / JetBrains
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# NuGet packages (restored on build)
+packages/
+*.nupkg
+.nuget/
+
+# Android build outputs
+*.apk
+*.aab
+*.keystore
+local.properties
+
+# EF Core migration tooling cache
+*.ef.db
+
+# macOS / Windows cruft
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.swp
+*~

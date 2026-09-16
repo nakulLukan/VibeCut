@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Global Base Styles -->
+    <Style TargetType="Page">
+        <Setter Property="BackgroundColor" Value="{StaticResource MD3Background}" />
+    </Style>
+
+    <Style TargetType="NavigationPage">
+        <Setter Property="BarBackgroundColor" Value="{StaticResource MD3Surface}" />
+        <Setter Property="BarTextColor" Value="{StaticResource MD3OnSurface}" />
+    </Style>
+
+    <!-- Material 3 Labels -->
+    <Style TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource MD3OnSurface}" />
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <Style x:Key="HeadlineLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+    </Style>
+
+    <Style x:Key="BodyLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="16" />
+    </Style>
+
+    <Style x:Key="CaptionLabel" TargetType="Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextColor" Value="{StaticResource MD3SurfaceVariant}" />
+    </Style>
+
+    <!-- Material 3 Button -->
+    <Style TargetType="Button">
+        <Setter Property="TextColor" Value="{StaticResource MD3OnPrimary}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource MD3Primary}" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="CornerRadius" Value="20" />
+        <Setter Property="Padding" Value="24,10" />
+        <Setter Property="MinimumHeightRequest" Value="40" />
+    </Style>
+
+    <Style x:Key="SecondaryButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource MD3Secondary}" />
+        <Setter Property="TextColor" Value="{StaticResource MD3OnSecondary}" />
+    </Style>
+
+    <!-- Material 3 Entry (Text Field) -->
+    <Style TargetType="Entry">
+        <Setter Property="TextColor" Value="{StaticResource MD3OnSurface}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource MD3SurfaceVariant}" />
+        <Setter Property="PlaceholderColor" Value="{StaticResource MD3Secondary}" />
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="HeightRequest" Value="56" />
+    </Style>
+
+    <!-- Material 3 Frame (Card) -->
+    <Style TargetType="Frame">
+        <Setter Property="HasShadow" Value="True" />
+        <Setter Property="BackgroundColor" Value="{StaticResource MD3Surface}" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="BorderColor" Value="Transparent" />
+        <Setter Property="Padding" Value="16" />
+    </Style>
+
+    <!-- Material 3 Progress Bar -->
+    <Style TargetType="ProgressBar">
+        <Setter Property="ProgressColor" Value="{StaticResource MD3Primary}" />
+        <Setter Property="HeightRequest" Value="4" />
+    </Style>
+
+</ResourceDictionary>
